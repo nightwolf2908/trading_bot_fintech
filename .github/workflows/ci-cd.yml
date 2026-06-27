@@ -15,6 +15,7 @@ on:
   workflow_dispatch:
 
 env:
+  # 🔥 CORREGIDO: Nombre simple de la imagen
   IMAGE_NAME: trading-bot
   REGISTRY: ghcr.io
 
@@ -163,13 +164,13 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
+          # 🔥 CORREGIDO: Estructura simplificada
           images: ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=sha,format=short
             type=raw,value=latest
       
-      # 🔥 CORREGIDO: Sin caché
       - name: 🐳 Construir y subir imagen Docker
         uses: docker/build-push-action@v5
         with:
@@ -181,10 +182,10 @@ jobs:
       - name: 📢 Imagen publicada
         run: |
           echo "✅ Imagen publicada en:"
-          echo "   📦 ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:latest"
+          echo "   📦 ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.IMAGE_NAME }}:latest"
           echo ""
           echo "📥 Para descargarla:"
-          echo "   docker pull ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:latest"
+          echo "   docker pull ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.IMAGE_NAME }}:latest"
           echo ""
           echo "🚀 Para ejecutarla:"
-          echo "   docker run --env-file .env ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:latest"
+          echo "   docker run --env-file .env ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.IMAGE_NAME }}:latest"
