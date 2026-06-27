@@ -74,9 +74,8 @@ jobs:
     name: 🔬 Prueba con Binance (usa Secrets)
     runs-on: ubuntu-latest
     needs: test
-    
-    # 🔥 CORREGIDO: Usar ${{ }} para evaluar secrets
-    if: ${{ secrets.BINANCE_API_KEY != '' && secrets.BINANCE_SECRET_KEY != '' }}
+    # 🔥 ELIMINAMOS el if problemático
+    # El job siempre corre, pero los pasos verifican si existen secrets
     
     steps:
       - name: 📥 Descargar código
@@ -91,19 +90,38 @@ jobs:
       - name: 📦 Instalar dependencias
         run: pip install -r requirements.txt
       
+      # 🔥 PASO PARA VERIFICAR SECRETS
+      # Si no existen secrets, este paso falla y los demás se saltan
+      - name: 🔐 Verificar Secrets
+        id: check-secrets
+        run: |
+          if [ -z "${{ secrets.BINANCE_API_KEY }}" ] || [ -z "${{ secrets.BINANCE_SECRET_KEY }}" ]; then
+            echo "⚠️ Secrets no configurados. Saltando prueba real..."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ Secrets configurados correctamente"
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+      
+      # 🔥 PASO CONDICIONAL: Solo corre si los secrets existen
       - name: 🔐 Crear .env con Secrets
+        if: steps.check-secrets.outputs.skip == 'false'
         run: |
           echo "BINANCE_API_KEY=${{ secrets.BINANCE_API_KEY }}" > .env
           echo "BINANCE_SECRET_KEY=${{ secrets.BINANCE_SECRET_KEY }}" >> .env
           echo "BINANCE_TESTNET=True" >> .env
           echo "LOG_LEVEL=INFO" >> .env
       
+      # 🔥 PASO CONDICIONAL: Solo corre si los secrets existen
       - name: 🔬 Probar conexión a Binance Testnet
+        if: steps.check-secrets.outputs.skip == 'false'
         run: |
           echo "🔬 Probando conexión a Binance Testnet..."
           python test_connection.py
       
+      # 🔥 PASO CONDICIONAL: Solo corre si los secrets existen
       - name: 📊 Mostrar balance de prueba
+        if: steps.check-secrets.outputs.skip == 'false'
         run: |
           echo "📊 Balance de prueba:"
           python -c "
@@ -115,6 +133,16 @@ jobs:
               print(f'   💵 USDT: ${usdt:,.2f}')
               print(f'   ₿ BTC: {btc:.8f}')
           "
+      
+      # 🔥 MENSAJE: Si no hay secrets, mostrar aviso
+      - name: ⏭️ Secrets no configurados
+        if: steps.check-secrets.outputs.skip == 'true'
+        run: |
+          echo "⏭️ Saltando pruebas reales porque no hay secrets configurados"
+          echo ""
+          echo "📝 Para configurar secrets:"
+          echo "   1. Ve a Settings → Secrets and variables → Actions"
+          echo "   2. Agrega BINANCE_API_KEY y BINANCE_SECRET_KEY"
 
   # ============================================
   # JOB 3: CONSTRUIR Y SUBIR DOCKER
@@ -166,4 +194,3 @@ jobs:
           echo ""
           echo "🚀 Para ejecutarla:"
           echo "   docker run --env-file .env ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:latest"
-
