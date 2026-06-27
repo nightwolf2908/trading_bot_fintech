@@ -56,17 +56,13 @@ jobs:
           python -m py_compile test_strategy.py
           python -m py_compile test_connection.py
       
-      # 🔥 CORREGIDO: Prueba de estrategia
       - name: 🧪 Ejecutar prueba de estrategia
         run: |
           python -c "
           from src.strategies.simple_moving_average import SimpleMovingAverageStrategy
           strategy = SimpleMovingAverageStrategy(short_window=5, long_window=10)
-          # Agregar 20 precios (del 1 al 20)
           for i in range(1, 21):
               strategy.add_price(i)
-          # La estrategia solo guarda los últimos 'long_window' (10) precios
-          # Entonces debe tener exactamente 10 precios
           assert len(strategy.prices) == 10
           print('✅ Estrategia funciona correctamente')
           print(f'📊 Precios guardados: {len(strategy.prices)}')
@@ -95,7 +91,6 @@ jobs:
       - name: 📦 Instalar dependencias
         run: pip install -r requirements.txt
       
-      # 🔥 PASO PARA VERIFICAR SECRETS
       - name: 🔐 Verificar Secrets
         id: check-secrets
         run: |
@@ -174,6 +169,7 @@ jobs:
             type=sha,format=short
             type=raw,value=latest
       
+      # 🔥 CORREGIDO: Sin caché
       - name: 🐳 Construir y subir imagen Docker
         uses: docker/build-push-action@v5
         with:
@@ -181,8 +177,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
       
       - name: 📢 Imagen publicada
         run: |
