@@ -1,5 +1,6 @@
 # 🤖 Trading Bot - Sistema de Comercio Algorítmico Cuantitativo
-[![CI/CD Pipeline](https://github.com/tu-usuario/trading-bot/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/tu-usuario/trading-bot/actions/workflows/ci-cd.yml)
+[![CI/CD Pipeline](https://github.com/nightwolf2908/trading_bot_fintech/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/nightwolf2908/trading_bot_fintech/actions/workflows/ci-cd.yml)
+[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue)](https://github.com/nightwolf2908/trading_bot_fintech/pkgs/container/trading-bot)
 
 Un bot de trading algorítmico profesional que se conecta a Binance Testnet para operar con dinero de prueba. Diseñado con arquitectura modular, estrategias cuantitativas y despliegue automatizado.
 
