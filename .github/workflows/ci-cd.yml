@@ -56,15 +56,22 @@ jobs:
           python -m py_compile test_strategy.py
           python -m py_compile test_connection.py
       
+      # 🔥 CORREGIDO: Prueba de estrategia
       - name: 🧪 Ejecutar prueba de estrategia
         run: |
           python -c "
           from src.strategies.simple_moving_average import SimpleMovingAverageStrategy
           strategy = SimpleMovingAverageStrategy(short_window=5, long_window=10)
-          for i in range(20, 40):
+          # Agregar 20 precios (del 1 al 20)
+          for i in range(1, 21):
               strategy.add_price(i)
-          assert len(strategy.prices) == 20
+          # La estrategia solo guarda los últimos 'long_window' (10) precios
+          # Entonces debe tener exactamente 10 precios
+          assert len(strategy.prices) == 10
           print('✅ Estrategia funciona correctamente')
+          print(f'📊 Precios guardados: {len(strategy.prices)}')
+          print(f'📊 SMA(5): {strategy.calculate_sma(5)}')
+          print(f'📊 SMA(10): {strategy.calculate_sma(10)}')
           "
 
   # ============================================
@@ -74,8 +81,6 @@ jobs:
     name: 🔬 Prueba con Binance (usa Secrets)
     runs-on: ubuntu-latest
     needs: test
-    # 🔥 ELIMINAMOS el if problemático
-    # El job siempre corre, pero los pasos verifican si existen secrets
     
     steps:
       - name: 📥 Descargar código
@@ -91,7 +96,6 @@ jobs:
         run: pip install -r requirements.txt
       
       # 🔥 PASO PARA VERIFICAR SECRETS
-      # Si no existen secrets, este paso falla y los demás se saltan
       - name: 🔐 Verificar Secrets
         id: check-secrets
         run: |
@@ -103,7 +107,6 @@ jobs:
             echo "skip=false" >> $GITHUB_OUTPUT
           fi
       
-      # 🔥 PASO CONDICIONAL: Solo corre si los secrets existen
       - name: 🔐 Crear .env con Secrets
         if: steps.check-secrets.outputs.skip == 'false'
         run: |
@@ -112,14 +115,12 @@ jobs:
           echo "BINANCE_TESTNET=True" >> .env
           echo "LOG_LEVEL=INFO" >> .env
       
-      # 🔥 PASO CONDICIONAL: Solo corre si los secrets existen
       - name: 🔬 Probar conexión a Binance Testnet
         if: steps.check-secrets.outputs.skip == 'false'
         run: |
           echo "🔬 Probando conexión a Binance Testnet..."
           python test_connection.py
       
-      # 🔥 PASO CONDICIONAL: Solo corre si los secrets existen
       - name: 📊 Mostrar balance de prueba
         if: steps.check-secrets.outputs.skip == 'false'
         run: |
@@ -134,7 +135,6 @@ jobs:
               print(f'   ₿ BTC: {btc:.8f}')
           "
       
-      # 🔥 MENSAJE: Si no hay secrets, mostrar aviso
       - name: ⏭️ Secrets no configurados
         if: steps.check-secrets.outputs.skip == 'true'
         run: |
