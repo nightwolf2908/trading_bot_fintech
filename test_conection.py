@@ -3,6 +3,7 @@
 Script de prueba para verificar la conexión con Binance Testnet
 """
 
+import sys
 from src.core.exchange_client import ExchangeClient
 from src.utils.logger import setup_logger
 
@@ -50,4 +51,12 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n⏹️ Prueba interrumpida por el usuario")
+    except Exception as e:
+        print(f"\n❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
