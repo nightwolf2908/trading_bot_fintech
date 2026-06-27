@@ -1,0 +1,55 @@
+# ============================================
+# DOCKER COMPOSE - Trading Bot
+# ============================================
+# Orquestación del bot para ejecución local.
+#
+# ¿PARA QUÉ SIRVE?
+# - Ejecutar el bot con un solo comando
+# - Configurar volúmenes para persistencia
+# - Manejar variables de entorno fácilmente
+# - Limitar recursos (CPU, memoria)
+# ============================================
+
+services:
+  # ===== SERVICIO PRINCIPAL: El bot =====
+  trading-bot:
+    # Construye desde el Dockerfile en la raíz
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    # Nombre del contenedor (para identificarlo fácilmente)
+    container_name: trading-bot
+    
+    # Política de reinicio: si se cae, reinicia automáticamente
+    restart: unless-stopped
+    
+    # Variables de entorno desde archivo .env
+    env_file:
+      - .env
+    
+    # Volúmenes para persistencia
+    volumes:
+      # Guardar el estado del bot (posiciones abiertas)
+      - ./bot_state.json:/app/bot_state.json
+      # Guardar logs (opcional)
+      - ./logs:/app/logs
+    
+    # Límites de recursos (evita que consuma todo)
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'      # Máximo 50% de un CPU
+          memory: 256M     # Máximo 256MB de RAM
+        reservations:
+          cpus: '0.1'      # Mínimo 10% de un CPU
+          memory: 64M      # Mínimo 64MB de RAM
+    
+    # Red aislada (seguridad)
+    networks:
+      - trading-network
+
+# ===== REDES =====
+networks:
+  trading-network:
+    driver: bridge

@@ -1,0 +1,12 @@
+# ============================================
+# requirements.txt - Dependencias
+# ============================================
+
+# Trading
+ccxt>=4.0.0
+
+# Configuración
+python-dotenv>=1.0.0
+
+# Testing (opcional, para CI/CD)
+pytest>=7.0.0

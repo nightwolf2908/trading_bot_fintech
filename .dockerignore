@@ -1,0 +1,39 @@
+# Archivos de entorno (¡NUNCA incluir en la imagen!)
+.env
+.env.local
+.env.*.local
+
+# Archivos de Python (caché)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Archivos de estado del bot (deben ser volúmenes)
+bot_state.json
+*.log
+logs/
+
+# Git
+.git/
+.gitignore
+.github/
+
+# Docker (no incluir archivos de Docker en la imagen)
+Dockerfile
+.dockerignore
+docker-compose.yml
+docker-compose.*.yml
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+test-reports/
+
+# Documentación
+README.md
+*.md
+docs/
+

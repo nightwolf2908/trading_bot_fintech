@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc 
+.env
+
+# Archivos de estado del bot
+bot_state.json
+*.log
+logs/
+trading_bot.log
+
