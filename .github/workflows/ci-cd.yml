@@ -97,7 +97,7 @@ jobs:
     
     # 🔥 CONDICIÓN: Solo corre si existen los secrets
     # Si no los configuras, este job se SKIP (salta)
-    if: secrets.BINANCE_API_KEY != '' && secrets.BINANCE_SECRET_KEY != ''
+    if: secrets.BINANCE_API_KEY != 'MmaV7NlAXshk32WRH4JgfIwF8wpcedZtIF3pvFHBpifwhj8BexXRMq8zc5O4e0z4' && secrets.BINANCE_SECRET_KEY != 'Oc1iJO5T3h2Aoj718ODjqjozpFlEUNhlAkaT2Mpwq7jyY5snr4pQu4lEpe3CXeCf'
     
     steps:
       - name: 📥 Descargar código
